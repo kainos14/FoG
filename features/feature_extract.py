@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import kurtosis, skew, entropy
 from scipy.signal import welch
-from typing import Dict
+from typing import Dict, List
 
 def extract_features_single_axis(signal: np.ndarray, fs: int = 64) -> Dict[str, float]:
     N = len(signal)
@@ -10,7 +10,6 @@ def extract_features_single_axis(signal: np.ndarray, fs: int = 64) -> Dict[str, 
     f, Pxx = welch(signal, fs=fs, nperseg=N)
     Pxx_norm = Pxx / np.sum(Pxx + 1e-8)  # Avoid zero division
 
-    # Frequency bands for Freeze Index & Power
     fog_band = (f >= 3) & (f <= 8)
     non_fog_band = (f >= 0.5) & (f < 3)
     power_fog = np.sum(Pxx[fog_band])
@@ -34,7 +33,6 @@ def extract_features_single_axis(signal: np.ndarray, fs: int = 64) -> Dict[str, 
     }
 
 def extract_features_all_axes(data: Dict[str, np.ndarray], fs: int = 64) -> Dict[str, float]:
-
     all_features = {}
     for sensor_type in ['acc', 'gyro']:
         for axis in ['x', 'y', 'z']:
@@ -43,3 +41,22 @@ def extract_features_all_axes(data: Dict[str, np.ndarray], fs: int = 64) -> Dict
             for feat_name, value in axis_feats.items():
                 all_features[f'{key}_{feat_name}'] = value
     return all_features
+
+def extract_features_sliding_windows(
+    data: Dict[str, np.ndarray], fs: int = 64, 
+    window_size: int = 128, step_size: int = 64
+) -> List[Dict[str, float]]:
+
+    length = len(data['acc_x'])  # assuming all signals are same length
+    features_list = []
+
+    for start in range(0, length - window_size + 1, step_size):
+        window_data = {
+            key: signal[start:start + window_size]
+            for key, signal in data.items()
+        }
+        features = extract_features_all_axes(window_data, fs)
+        features_list.append(features)
+
+    return features_list
+
