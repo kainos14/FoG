@@ -25,54 +25,101 @@ def get_zipped_model_size(file):
 
 ## 2. Custom Attention & ECA Layers
 
-def attention_3d_block(inputs, single_attention_vector=False):
-    time_steps = K.int_shape(inputs)[1]
-    input_dim = K.int_shape(inputs)[2]
-    
-    a = Permute((2, 1))(inputs)
-    a = Dense(time_steps, activation='softmax')(a)
-    
-    if single_attention_vector:
-        a = Lambda(lambda x: K.mean(x, axis=1))(a)
-        a = RepeatVector(input_dim)(a)
-        
-    a_probs = Permute((2, 1))(a)
-    output_attention_mul = Multiply()([inputs, a_probs])
-    return output_attention_mul
+import math
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras import backend as K
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import (
+    Input, Conv1D, Dense, Flatten, GRU, GlobalAveragePooling1D,
+    Activation, Reshape, Multiply, Permute, Lambda
+)
 
-def eca_layer(inputs_tensor=None, num=None, gamma=10, b=1):
+# Residual Attention Block
+def residual_attention_block(x, units):
+    # x: (batch, time, features)
+    a = Permute((2, 1))(x)
+    a = Dense(K.int_shape(x)[1], activation='softmax')(a)  # time steps
+    a = Permute((2, 1))(a)
+    x = Multiply()([x, a])
+    return x
+
+# ECA Layer
+def eca_layer(inputs_tensor, gamma=2, b=1):
     channels = K.int_shape(inputs_tensor)[-1]
+
     t = int(abs((math.log(channels, 2) + b) / gamma))
-    k = t if t % 2 else t + 1
+    k_size = t if t % 2 else t + 1
+    if k_size < 1:
+        k_size = 1
 
     x = GlobalAveragePooling1D()(inputs_tensor)
     x = Reshape((channels, 1))(x)
-    x = Conv1D(1, kernel_size=k, padding="same", name="eca_conv1_" + str(num))(x)
-    x = Activation('sigmoid', name='eca_conv1_relu_' + str(num))(x)
-    x = Reshape((1, 1, channels))(x)
-    
-    return multiply([inputs_tensor, x])
-
+    x = Conv1D(1, kernel_size=k_size, padding="same")(x)
+    x = Activation('sigmoid')(x)
+    x = Reshape((1, channels))(x)
+    return Multiply()([inputs_tensor, x])
 
 ## 3. Build & Train the Model
 
-input_layer = Input(shape=(n_timesteps, n_features))
-x = Conv1D(filters=64, kernel_size=3, activation='relu')(input_layer)
-x = attention_3d_block(x)
-x = layers.GRU(64, return_sequences=True, activation="relu")(x)
+import math
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras import backend as K
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import (
+    Input, Conv1D, Dense, Flatten, GRU, GlobalAveragePooling1D,
+    Activation, Reshape, Multiply, Permute, Lambda
+)
 
+# Residual Attention Block
+def residual_attention_block(x, units):
+    # x: (batch, time, features)
+    a = Permute((2, 1))(x)
+    a = Dense(K.int_shape(x)[1], activation='softmax')(a)  # time steps
+    a = Permute((2, 1))(a)
+    x = Multiply()([x, a])
+    return x
+
+# ECA Layer
+def eca_layer(inputs_tensor, gamma=2, b=1):
+    channels = K.int_shape(inputs_tensor)[-1]
+
+    t = int(abs((math.log(channels, 2) + b) / gamma))
+    k_size = t if t % 2 else t + 1
+    if k_size < 1:
+        k_size = 1
+
+    x = GlobalAveragePooling1D()(inputs_tensor)
+    x = Reshape((channels, 1))(x)
+    x = Conv1D(1, kernel_size=k_size, padding="same")(x)
+    x = Activation('sigmoid')(x)
+    x = Reshape((1, channels))(x)
+    return Multiply()([inputs_tensor, x])
+
+input_layer = Input(shape=(n_timesteps, n_features))
+
+# 1D CNN (kernel size = 1) + ReLU
+x = Conv1D(filters=64, kernel_size=1, activation='relu')(input_layer)
+
+# Residual Attention
+x = residual_attention_block(x, units=64)
+
+# GRU (단방향)
+x = GRU(64, return_sequences=True, activation='relu')(x)
+
+# ECA Attention
 x = eca_layer(x)
 
+# Flatten + Dense
 x = Flatten()(x)
-x = Dense(64, activation="relu")(x)
-outputs = Dense(2, activation="sigmoid")(x)
+x = Dense(64, activation='relu')(x)
+outputs = Dense(2, activation='softmax')(x)
 
-model = Model(input_layer, outputs)
+# Build model
+model = Model(inputs=input_layer, outputs=outputs)
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
 model.summary()
-
-history = model.fit(X_train, trainy_one_hot, epochs=20, batch_size=32, validation_split=0.1, shuffle=True)
-
 
 ## 4. Training & Evaluation Visualization
 
