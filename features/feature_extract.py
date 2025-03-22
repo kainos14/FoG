@@ -8,9 +8,9 @@ def extract_features_single_axis(signal: np.ndarray, fs: int = 64) -> Dict[str, 
     t = np.arange(N) / fs
 
     f, Pxx = welch(signal, fs=fs, nperseg=N)
-    Pxx_norm = Pxx / np.sum(Pxx + 1e-8)  # 0으로 나누는 오류 방지
+    Pxx_norm = Pxx / np.sum(Pxx + 1e-8) 
 
-    # Freeze Index 계산용 주파수 밴드
+    # Freeze Index
     fog_band = (f >= 3) & (f <= 8)
     non_fog_band = (f >= 0.5) & (f < 3)
     power_fog = np.sum(Pxx[fog_band])
