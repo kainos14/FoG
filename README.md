@@ -1,27 +1,24 @@
 # 
 
 
->**This is the official implementation of the paper with the title “Fall Detection of the Elderly Using Denoising LSTM-based Convolutional Variant Autoencoder”by Myung-Kyu Yi, KyungHyun Han, and Seong Oun Hwang**
+>**This is the official implementation of the paper with the title “A new lightweight deep learning model optimized with pruning and dynamic quantization to detect freezing gait on wearable devices”by Myung-Kyu Yi and Seong Oun Hwang**
 >
->https://ieeexplore.ieee.org/document/10508748
->
->https://doi.org/10.1109/JSEN.2024.3388478
+>https://doi.org/
 
 ## Paper Overview
 
 **Abstract**: 
-As societies age, the issue of falls has become increasingly critical for the health and safety of the elderly. Fall detection in the elderly has traditionally relied on supervised learning methods, which require data on falls, which is difficult to obtain in real situations. Additionally, the complexity of integrating deep learning models into wearable devices for real-time fall detection has been challenging due to limited computational resources. In this paper, we propose a novel fall detection method using unsupervised learning based on a denoising long short term memory (LSTM)-based convolutional variational autoencoder (CVAE) model to solve the problem of lack of fall data. By utilizing the proposed data debugging and hierarchical data balancing techniques, the proposed method achieves an F1 score of 1.0 while reducing the parameter count by 25.6 times compared to the state-of-the-art unsupervised deep learning method. The resulting model occupies only 157.65 KB of memory, making it highly suitable for integration into wearable devices.
+Freezing of gait (FoG) is a debilitating symptom of Parkinson’s disease that severely impacts patients’ mobility and quality of life. To minimize the risk of falls and injuries associated with FoG, it is crucial to develop highly accurate FoG detection systems for portable wearable devices that enable continuous and real-time monitoring. However, achieving high accuracy in deep learning (DL) models typically requires a large number of parameters and integrating multiple sensors, posing challenges for deployment on resource-constrained wearable devices. To address these challenges, we propose a novel lightweight DL model that combines a convolutional neural network and a gated recurrent unit with residual attention and efficient channel attention mechanisms. Additionally, we incorporate pruning and dynamic quantization techniques, along with an innovative feature selection method, to optimize the model for wearable applications. Experimental results demonstrate that our proposed DL model outperforms state-of-the-art supervised DL models, achieving an F1 score of 0.994 while utilizing 29.9 times fewer parameters than existing models. The model’s maximum memory usage is only 420.91 KB, making it well-suited for wearable devices. Furthermore, optimizations through pruning and dynamic quantization further reduced the model size by an additional 7.84 times, resulting in a final size of just 44.04 KB without sacrificing accuracy. As a result, the proposed DL model achieves high accuracy in FoG detection with minimal memory usage, enabling real-time monitoring on wearable devices and providing a practical solution for managing FoG in Parkinson’s patients.
 
 ---
 ## Dataset
-- MobiFall dataset is available at https://bmi.hmu.gr/the-mobifall-and-mobiact-datasets-2/
-- MobiAct dataset is available at https://bmi.hmu.gr/the-mobifall-and-mobiact-datasets-2/
-- SisFall dataset is available at http://sistemic.udea.edu.co/investigacion/proyectos/english-falls/?lang=en
-- FallAllD dataset is available at http://10.21227/bnya-mn34
+- Daphnet Freezing of Gait dataset is available at https://bmi.hmu.gr/the-mobifall-and-mobiact-datasets-2/](https://archive.ics.uci.edu/dataset/245/daphnet+freezing+of+gait)
+- Multimodal dataset is available at https://data.mendeley.com/datasets/t8j8v4hnm4/1
+- IMU dataset is available at https://figshare.com/articles/dataset/A_public_dataset_of_video_acceleration_and_angular_velocity_in_individuals_with_Parkinson_s_disease_during_the_turning-in-place_task/14984667
 
 ## Codebase Overview
 - We note that:
-  - <CVAE.py> for the proposed DCVAE model.
+  - <model.py> for the proposed lightweight deep learning models 
 
 Framework uses Tensorflow 2+, tensorflow_addons, numpy, pandas, matplotlib, scikit-learn.  
   
@@ -31,14 +28,14 @@ If our project is helpful for your research, please consider citing :
 
 ```
 @article{yi2024jsen,
-  title={Fall Detection of the Elderly Using Denoising LSTM-based Convolutional Variant Autoencoder},
-  author={Myung-Kyu Yi, KyungHyun Han, and Seong Oun Hwang},
-  journal={IEEE Sensor Journal},
-  volume={24},
-  Issue={11},
-  pages={18556 - 18567},
-  year={2024}
-  publisher={IEEE}
+  title={A new lightweight deep learning model optimized with pruning and dynamic quantization to detect freezing gait on wearable devices},
+  author={Myung-Kyu Yi and Seong Oun Hwang},
+  journal={},
+  volume={},
+  Issue={},
+  pages={},
+  year={}
+  publisher={}
 }
 
 ```
