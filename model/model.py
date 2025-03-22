@@ -23,7 +23,7 @@ def get_zipped_model_size(file):
         f.write(file)
     return os.path.getsize(zipped_file)
 
-## 2. Custom Attention & ECA Layers
+## 2. Residual Attention Block & ECA Layers
 
 import math
 from tensorflow import keras
@@ -35,7 +35,6 @@ from tensorflow.keras.layers import (
     Activation, Reshape, Multiply, Permute, Lambda
 )
 
-# Residual Attention Block
 def residual_attention_block(x, units):
     # x: (batch, time, features)
     a = Permute((2, 1))(x)
@@ -72,35 +71,10 @@ from tensorflow.keras.layers import (
     Activation, Reshape, Multiply, Permute, Lambda
 )
 
-# Residual Attention Block
-def residual_attention_block(x, units):
-    # x: (batch, time, features)
-    a = Permute((2, 1))(x)
-    a = Dense(K.int_shape(x)[1], activation='softmax')(a)  # time steps
-    a = Permute((2, 1))(a)
-    x = Multiply()([x, a])
-    return x
-
-# ECA Layer
-def eca_layer(inputs_tensor, gamma=2, b=1):
-    channels = K.int_shape(inputs_tensor)[-1]
-
-    t = int(abs((math.log(channels, 2) + b) / gamma))
-    k_size = t if t % 2 else t + 1
-    if k_size < 1:
-        k_size = 1
-
-    x = GlobalAveragePooling1D()(inputs_tensor)
-    x = Reshape((channels, 1))(x)
-    x = Conv1D(1, kernel_size=k_size, padding="same")(x)
-    x = Activation('sigmoid')(x)
-    x = Reshape((1, channels))(x)
-    return Multiply()([inputs_tensor, x])
-
 input_layer = Input(shape=(n_timesteps, n_features))
 
-# 1D CNN (kernel size = 1) + ReLU
-x = Conv1D(filters=64, kernel_size=1, activation='relu')(input_layer)
+# 1D CNN + ReLU
+x = Conv1D(filters=64, kernel_size=3, activation='relu')(input_layer)
 
 # Residual Attention
 x = residual_attention_block(x, units=64)
