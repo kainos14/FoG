@@ -47,10 +47,10 @@ def extract_features_sliding_windows(
     data: Dict[str, np.ndarray], fs: int = 64
 ) -> List[Dict[str, float]]:
     
-    window_size = 128            # 2초 = 128샘플 (fs=64)
-    step_size = window_size // 2 # 50% 오버래핑 = 64샘플 슬라이딩
+    window_size = 128            # fs=64
+    step_size = window_size // 2 
 
-    length = len(data['acc_x'])  # 모든 축 동일한 길이라고 가정
+    length = len(data['acc_x'])  
     features_list = []
 
     for start in range(0, length - window_size + 1, step_size):
