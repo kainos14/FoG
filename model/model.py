@@ -57,7 +57,7 @@ def eca_layer(inputs_tensor=None, num=None, gamma=10, b=1):
 ## 3. Build & Train the Model
 
 input_layer = Input(shape=(n_timesteps, n_features))
-x = Conv1D(filters=64, kernel_size=1, activation='relu')(input_layer)
+x = Conv1D(filters=64, kernel_size=3, activation='relu')(input_layer)
 x = attention_3d_block(x)
 x = layers.GRU(64, return_sequences=True, activation="relu")(x)
 
