@@ -8,8 +8,9 @@ def extract_features_single_axis(signal: np.ndarray, fs: int = 64) -> Dict[str, 
     t = np.arange(N) / fs
 
     f, Pxx = welch(signal, fs=fs, nperseg=N)
-    Pxx_norm = Pxx / np.sum(Pxx + 1e-8)  # Avoid zero division
+    Pxx_norm = Pxx / np.sum(Pxx + 1e-8)  # 0으로 나누는 오류 방지
 
+    # Freeze Index 계산용 주파수 밴드
     fog_band = (f >= 3) & (f <= 8)
     non_fog_band = (f >= 0.5) & (f < 3)
     power_fog = np.sum(Pxx[fog_band])
@@ -43,11 +44,13 @@ def extract_features_all_axes(data: Dict[str, np.ndarray], fs: int = 64) -> Dict
     return all_features
 
 def extract_features_sliding_windows(
-    data: Dict[str, np.ndarray], fs: int = 64, 
-    window_size: int = 128, step_size: int = 64
+    data: Dict[str, np.ndarray], fs: int = 64
 ) -> List[Dict[str, float]]:
+    
+    window_size = 128            # 2초 = 128샘플 (fs=64)
+    step_size = window_size // 2 # 50% 오버래핑 = 64샘플 슬라이딩
 
-    length = len(data['acc_x'])  # assuming all signals are same length
+    length = len(data['acc_x'])  # 모든 축 동일한 길이라고 가정
     features_list = []
 
     for start in range(0, length - window_size + 1, step_size):
