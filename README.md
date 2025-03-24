@@ -12,15 +12,15 @@ Freezing of gait (FoG) is a debilitating symptom of Parkinson’s disease that s
 
 ---
 ## Dataset
-- Daphnet Freezing of Gait dataset is available at https://bmi.hmu.gr/the-mobifall-and-mobiact-datasets-2/](https://archive.ics.uci.edu/dataset/245/daphnet+freezing+of+gait)
-- Multimodal dataset is available at https://data.mendeley.com/datasets/t8j8v4hnm4/1
-- IMU dataset is available at https://figshare.com/articles/dataset/A_public_dataset_of_video_acceleration_and_angular_velocity_in_individuals_with_Parkinson_s_disease_during_the_turning-in-place_task/14984667
+♣ Daphnet Freezing of Gait dataset is available at https://bmi.hmu.gr/the-mobifall-and-mobiact-datasets-2/](https://archive.ics.uci.edu/dataset/245/daphnet+freezing+of+gait)
+♣ Multimodal dataset is available at https://data.mendeley.com/datasets/t8j8v4hnm4/1
+♣ IMU dataset is available at https://figshare.com/articles/dataset/A_public_dataset_of_video_acceleration_and_angular_velocity_in_individuals_with_Parkinson_s_disease_during_the_turning-in-place_task/14984667
 
 ## Codebase Overview
 - We note that:
   - <model.py> for the proposed lightweight deep learning models 
 
-Framework uses Tensorflow 2+, tensorflow_addons, numpy, pandas, matplotlib, scikit-learn.  
+Framework uses Tensorflow, Pytorch, tensorflow_addons, numpy, pandas, matplotlib, scikit-learn.  
   
 ## Citing This Repository
 
