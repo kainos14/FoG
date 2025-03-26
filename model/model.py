@@ -82,7 +82,7 @@ x = eca_layer(x)
 # Flatten + Dense
 x = Flatten()(x)
 x = Dense(64, activation='relu')(x)
-outputs = Dense(2, activation='sigmoid')(x)
+outputs = Dense(1, activation='sigmoid')(x)
 
 # Build model
 model = Model(inputs=input_layer, outputs=outputs)
