@@ -35,26 +35,20 @@ from tensorflow.keras.layers import (
     Activation, Reshape, Multiply, Permute, Lambda
 )
 
+# Residual Attention Block
 def residual_attention_block(x, units):
-    # x: (batch, time, features)
     a = Permute((2, 1))(x)
-    a = Dense(K.int_shape(x)[1], activation='softmax')(a)  # time steps
+    a = Dense(K.int_shape(x)[1], activation='relu')(a)  
     a = Permute((2, 1))(a)
     x = Multiply()([x, a])
     return x
 
-# ECA Layer
-def eca_layer(inputs_tensor, gamma=2, b=1):
+# ECA Block (이미지 기준: kernel size = 1 고정)
+def eca_layer(inputs_tensor):
     channels = K.int_shape(inputs_tensor)[-1]
-
-    t = int(abs((math.log(channels, 2) + b) / gamma))
-    k_size = t if t % 2 else t + 1
-    if k_size < 1:
-        k_size = 1
-
     x = GlobalAveragePooling1D()(inputs_tensor)
     x = Reshape((channels, 1))(x)
-    x = Conv1D(1, kernel_size=k_size, padding="same")(x)
+    x = Conv1D(1, kernel_size=1, padding="same", activation='relu')(x)  # kernel size=1, activation=ReLU
     x = Activation('sigmoid')(x)
     x = Reshape((1, channels))(x)
     return Multiply()([inputs_tensor, x])
@@ -88,7 +82,7 @@ x = eca_layer(x)
 # Flatten + Dense
 x = Flatten()(x)
 x = Dense(64, activation='relu')(x)
-outputs = Dense(2, activation='softmax')(x)
+outputs = Dense(2, activation='sigmoid')(x)
 
 # Build model
 model = Model(inputs=input_layer, outputs=outputs)
