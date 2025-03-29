@@ -1,3 +1,10 @@
+
+## 6. Save, Quantize & Evaluate TFLite Model
+
+mfile = 'model.h5'
+model_size = get_zipped_model_size(mfile)
+print("Model Size: {:.2f}MB".format(model_size / 1000))
+
 # Quantization
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
