@@ -152,3 +152,9 @@ plt.grid(True)
 plt.title('ROC Curve')
 plt.show()
 
+## 6. Save, Quantize & Evaluate TFLite Model
+
+mfile = 'model.h5'
+model.save(mfile, include_optimizer=False)
+model_size = get_zipped_model_size(mfile)
+print("Model Size: {:.2f}MB".format(model_size / 1000))
